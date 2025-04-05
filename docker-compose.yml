@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./ResumeAnalyzerBackend
+    ports:
+      - "5009:5009"
+    environment:
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=ResumeAnalyzer
+      - MongoDB__ConnectionString=mongodb://mongo:27017
+      - MongoDB__DatabaseName=ResumeAnalyzerDB
+      - GoogleAI__ApiKey=${GOOGLE_API_KEY}
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./angular-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
